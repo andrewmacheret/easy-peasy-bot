@@ -1,0 +1,46 @@
+
+name: EAC to Cloud Migration
+description: Migration tool
+organization: "EAC to Cloud"
+
+notifications:
+  email: amacheret@atlassian.com
+
+links:
+  binary:
+    name: "${DOCKER_IMAGE}"
+    type: docker
+    tag: "${DOCKER_TAG}"
+  healthcheck:
+    uri: /healthcheck
+  source:
+    url: ssh://git@bitbucket.org:josef_john/cloud-migration.git
+
+scaling:
+  min: 1
+  max: 1
+  instance: m5.24xlarge
+
+serviceVolume:
+  type: gp2
+  size: 350
+
+requiresAsap: true
+
+network:
+  outbound: private
+
+config:
+  environmentVariables:
+    NODE_ENV: production
+    EXTRANET_ENV: dev
+    SERVICE_VOLUME: /opt/micros/serviceVolume
+
+environmentOverrides:
+  stg-west2:
+    config:
+      environmentVariables:
+        CONFLUENCE_SERVER_HOST: extranet-export.internal.atlassian.com
+        EXTRANET_HOST: 10.64.2.249
+        CONFLUENCE_CLOUD_URL: https://hello.atlassian.net
+        CONFLUENCE_CLOUD_CLIENT_ID: 604d2f43-c264-4a11-9ea2-dca8cf131262
